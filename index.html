@@ -53,6 +53,17 @@
 
         .header-left { display: flex; align-items: center; gap: 1.5rem; }
         
+        .search-bar {
+            flex: 1; max-width: 400px; margin: 0 2rem; position: relative;
+        }
+        .search-bar input {
+            width: 100%; padding: 0.6rem 1rem 0.6rem 2.5rem; border-radius: 20px;
+            border: 1px solid var(--border); background: var(--background);
+            font-family: inherit; font-size: 0.95rem; outline: none; transition: var(--transition);
+        }
+        .search-bar input:focus { border-color: var(--secondary); background: white; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); opacity: 0.5; font-size: 1rem; }
+        
         .menu-toggle {
             background: none; border: none; font-size: 1.5rem; color: var(--text-main);
             display: flex; align-items: center; justify-content: center; transition: var(--transition);
@@ -249,6 +260,10 @@
             <button class="menu-toggle" id="menu-toggle">☰</button>
             <div class="logo">Thread & Co.</div>
         </div>
+        <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Search products...">
+        </div>
         <div class="cart-icon" id="cart-icon">🛒 <span class="cart-count" id="cart-count">0</span></div>
     </header>
 
@@ -398,11 +413,29 @@
             if(file) reader.readAsDataURL(file);
         });
 
-        function renderProducts() {
+        // Search Logic
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(query));
+            renderProducts(filtered);
+        });
+
+        async function deleteProduct(id) {
+            if(!confirm("Are you sure you want to delete this product?")) return;
+            try {
+                const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                if(res.ok) fetchProducts();
+                else alert("Failed to delete product");
+            } catch(err) {
+                alert("Error connecting to server");
+            }
+        }
+
+        function renderProducts(productsToRender = products) {
             productGrid.innerHTML = '';
             adminProductGrid.innerHTML = '';
             
-            products.forEach(product => {
+            productsToRender.forEach(product => {
                 // Main Store Card
                 const card = document.createElement('div');
                 card.className = 'product-card';
@@ -420,16 +453,20 @@
                 card.addEventListener('click', () => openProductModal(product));
                 productGrid.appendChild(card);
 
-                // Admin View Card (just visual)
+                // Admin View Card
                 const adminCard = document.createElement('div');
                 adminCard.className = 'product-card';
                 adminCard.innerHTML = `
                     <div class="image-wrapper"><img src="${product.image}" class="product-image"></div>
                     <div class="product-info">
                         <h2 class="product-title">${product.name}</h2>
-                        <p class="product-price">$${product.price.toFixed(2)}</p>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <p class="product-price" style="margin:0;">$${product.price.toFixed(2)}</p>
+                            <button class="btn-primary btn-delete" data-id="${product.id}" style="background:#ef4444; width:auto; padding:0.4rem 0.8rem; font-size:0.9rem;">Delete</button>
+                        </div>
                     </div>
                 `;
+                adminCard.querySelector('.btn-delete').addEventListener('click', () => deleteProduct(product.id));
                 adminProductGrid.appendChild(adminCard);
             });
         }

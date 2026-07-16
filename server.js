@@ -51,6 +51,23 @@ app.post('/api/products', (req, res) => {
     });
 });
 
+// Delete a product
+app.delete('/api/products/:id', (req, res) => {
+    const idToDelete = parseInt(req.params.id);
+    
+    fs.readFile(productsFile, 'utf8', (err, data) => {
+        if (err) return res.status(500).json({ error: 'Failed to read database' });
+        
+        let products = JSON.parse(data);
+        products = products.filter(p => p.id !== idToDelete);
+        
+        fs.writeFile(productsFile, JSON.stringify(products, null, 4), (err) => {
+            if (err) return res.status(500).json({ error: 'Failed to delete product' });
+            res.json({ success: true });
+        });
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
