@@ -284,6 +284,14 @@
         .cart-item-info { flex: 1; display: flex; flex-direction: column; justify-content: center;}
         .cart-item-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.2rem;}
         .cart-item-price { color: var(--secondary); font-weight: 700; font-size: 1.1rem; margin-top:0.4rem;}
+        
+        .cart-item-remove {
+            background: rgba(239, 68, 68, 0.1); border: none; color: #ef4444; width: 36px; height: 36px;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; transition: var(--transition); align-self: center; margin-left: 0.5rem;
+        }
+        .cart-item-remove:hover { background: #ef4444; color: white; transform: scale(1.1) rotate(5deg); }
+
         .cart-footer { margin-top: auto; padding-top: 2rem; border-top: 2px solid var(--border); }
         .cart-total-row { display: flex; justify-content: space-between; margin-bottom: 2rem; font-size: 1.4rem; font-weight: 800; }
         .btn-checkout { padding: 1.2rem; font-size: 1.1rem; border-radius: 16px; }
@@ -620,6 +628,12 @@
             updateCartUI();
         }
 
+        function removeFromCart(cartId) {
+            cart = cart.filter(item => item.cartId !== cartId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
         function updateCartUI() {
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             const badge = document.getElementById('cart-count');
@@ -649,6 +663,7 @@
                         <div style="font-size:0.9rem; color:var(--text-muted)">Size: ${item.size} &nbsp;|&nbsp; Qty: ${item.quantity}</div>
                         <div class="cart-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
                     </div>
+                    <button class="cart-item-remove" onclick="removeFromCart('${item.cartId}')" title="Remove from bag">✕</button>
                 `;
                 cartItemsEl.appendChild(el);
             });
