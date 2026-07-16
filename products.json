@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "name": "Classic Cotton T-Shirt",
+        "price": 35,
+        "image": "assets/images/tshirt_premium_1784173667417.jpg"
+    },
+    {
+        "id": 2,
+        "name": "Relaxed Fit Denim Jeans",
+        "price": 85,
+        "image": "assets/images/jeans_premium_1784173677521.jpg"
+    },
+    {
+        "id": 3,
+        "name": "Cozy Knit Sweater",
+        "price": 65,
+        "image": "assets/images/sweater_premium_1784173688008.jpg"
+    },
+    {
+        "id": 4,
+        "name": "Floral Summer Dress",
+        "price": 75,
+        "image": "assets/images/dress_premium_1784173698489.jpg"
+    }
+]
